@@ -1,0 +1,23 @@
+Learning curriculum: Stock Trading
+========================================
+
+MODULE: 1. Understanding the Basics of Stocks and the Stock Market
+----------------------------------------
+Recommended Article/Tutorial:
+  - Title: Understanding the Stock Market: A Beginner's Guide
+    Reason: This result explicitly labels itself as a 'Beginner's Guide' and its snippet clearly states it will help users learn what the stock market is, how it works, and how to get started investing, which perfectly aligns with the query for stock market basics for beginners.
+    Link: https://www.neamb.com/retirement-planning/understanding-the-stock-market-a-beginners-guide
+
+Recommended YouTube Videos:
+  - Best (General): Investing Basics: Stocks
+    Reason: This video is concise (5:08), directly addresses 'basics' by explaining what stocks are and their associated risks, and is from a reputable source (Charles Schwab), making it ideal for a beginner's introduction.
+    Link: https://www.youtube.com/watch?v=R4h7fyAU7GA
+  - Best (Most Viewed): Ultimate Beginner's Guide to Investing in Stocks
+    Reason: This video's title directly addresses beginners, and its snippet indicates high viewership for similar content from the same creator, making it a strong match for 'Most Viewed video for stock market basics for beginners'.
+    Link: https://www.youtube.com/watch?v=86rPBAnRCHc
+  - Best (Most Recent): Stock Market for Beginners 2025 – The Ultimate Investing Guide
+    Reason: This video is the most recent, specifically titled for 'Beginners' in 'Stock Market' for 2025, and explicitly states it covers 'how to buy and sell stocks step by step' as an 'Ultimate Investing Guide', making it ideal for a beginner looking for current basic information.
+    Link: https://www.youtube.com/watch?v=bb6_M_srMBk
+
+========================================
+

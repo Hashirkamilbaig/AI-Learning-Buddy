@@ -1,83 +1,116 @@
-import re
 import json
-import os
+import uuid
 import numpy as np
+from .database import SessionLocal
+from .models import Plan, Module
+from sqlalchemy.orm import joinedload
 
-#First what we do is Vector and Embedding Functions
-def get_embedding(model, text):
+def get_embedding(genai_client, text):
+  #Here we are generating a vector embedding for the text
   try:
-    embedding = model.embed_content(model="models/gemini-embedding-001", content=text)
-    return embedding["embedding"]
+    result = genai_client.embed_content(model="models/gemini-embedding-001", content=text)
+    return result["embedding"]
   except Exception as e:
     raise RuntimeError(f"[Fatal Error] Could not create embedding: {e}")
   
-def find_similar_plan(embedding_model, user_embedding):
-  """
-    Searches for similar plans in the directory and also returns the name of the file if it is matched
-  """
+def find_similar_plan_in_db(user_embedding):
   if user_embedding is None:
-    return None, None
+    return None
   
   SIMILARITY_THRESHOLD = 0.6
 
-  for filename in os.listdir('.'):
-    if filename.endswith(".npy"):
-      try:
-        # this is when we load the saved vector
-        saved_vector = np.load(filename)
-
-        # We will use that saved vector of that file and use cosine rule to find the similarity and give us the saved plan if available
-        cosine_similarity = np.dot(user_embedding, saved_vector) / (np.linalg.norm(user_embedding) * np.linalg.norm(saved_vector))
-
-        if cosine_similarity > SIMILARITY_THRESHOLD:
-          print(f"  > Found a similar plan with similarity: {cosine_similarity:.2f}")
-          # This is when we will return the orignal topic name and return orignal file
-          original_topic = filename.replace('learning_plan_', '').replace('.npy', '').replace('_', ' ')
-          text_filename = filename.replace('.npy', '.txt')
-          return original_topic, text_filename
-      except Exception as e:
-        print(f"  [Error] Could not process vector file {filename}: {e}")
-  return None, None
-
-def save_curriculum_to_file(embedding_model, topic, curriculum_data):
-  """Saves the generated curriculum to a text file"""
-  safe_filename_base = re.sub(r'[^a-zA-Z0-9_]', '_', topic)
-  text_filename = f"learning_plan_{safe_filename_base}.txt"
-  vector_filename = f"learning_plan_{safe_filename_base}.npy"
-
-  print(f"Saving your curriculum to {text_filename}...")
+  db = SessionLocal()
   try:
-    #this is saving human readable text file
-    with open(text_filename, "w", encoding='utf-8') as f:
-      f.write(f"Learning curriculum: {topic}\n")
-      f.write("=" * 40 + "\n\n")
-      for item in curriculum_data:
-        f.write(f"MODULE: {item['step']}\n")
-        f.write("-" * 40 + "\n")
-
-        #We have to write article info
-        article_info = item['article']
-        f.write("Recommended Article/Tutorial:\n")
-        f.write(f"  - Title: {article_info['title']}\n")
-        f.write(f"    Reason: {article_info['reason']}\n")
-        f.write(f"    Link: {article_info['link']}\n\n")
-
-        #Write video info
-        f.write("Recommended YouTube Videos:\n")
-        for category, video_info in item['videos'].items():
-          f.write(f"  - Best ({category}): {video_info['title']}\n")
-          f.write(f"    Reason: {video_info['reason']}\n")
-          f.write(f"    Link: {video_info['link']}\n")
-
-        f.write("\n" + "=" * 40 + "\n\n")
+    all_plans = db.query(Plan).options(joinedload(Plan.modules)).all()
+    if not all_plans:
+      return None
     
-    #Now we have to create and save vector embedding
-    print(f"🧠 Creating a memory embedding for '{topic}'...")
+    best_match = None
+    highest_similarity = 0.0
+    
+    user_vector = np.array(user_embedding)
 
-    topic_embedding = get_embedding(embedding_model, topic)
-    if topic_embedding:
-      np.save(vector_filename, topic_embedding)
-    print("✅ Your plan has been saved!")
+    for plan in all_plans:
+      saved_vector = np.array(plan.embedding)
+      cosine_similarity = np.dot(user_vector, saved_vector) / (np.linalg.norm(user_vector) * np.linalg.norm(saved_vector))
 
-  except IOError as e:
-    print(f"[Error] Could not save file: {e}")
+      if cosine_similarity > highest_similarity:
+        highest_similarity = cosine_similarity
+        best_match = plan
+    
+    if highest_similarity > SIMILARITY_THRESHOLD:
+      print(f"  > Found a similar plan in DB ('{best_match.topic}') with similarity: {highest_similarity:.2f}")
+      # The 'best_match' object already contains all the modules thanks to the 'relationship'
+      return best_match
+  
+  finally:
+    db.close()
+
+  return None
+
+def save_curriculum_to_db(genai_client, topic, curriculum_data):
+  print(f"\n💾 Saving your curriculum for '{topic}' to the database...")
+  db = SessionLocal()
+  try:
+    #creating the vector embedding of the topic
+    topic_embedding = get_embedding(genai_client, topic)
+    if not topic_embedding:
+      print("  [Error] Could not create embedding. Aborting save.")
+      return
+    
+    #Create the main plan record
+    new_plan = Plan(
+      id=str(uuid.uuid4()), # Generate a unique ID
+      topic= topic,
+      embedding = topic_embedding,
+    )
+    db.add(new_plan) # Adding the new plan to the session
+
+    for i, step_data in enumerate(curriculum_data):
+      new_module = Module(
+        id = str(uuid.uuid4()),
+        plan_id = new_plan.id,
+        stepNumber = i+1,
+        title = step_data['step'],
+        articleTitle = step_data['article']['title'],
+        articleReason = step_data['article']['reason'],
+        articleLink = step_data['article']['link'],
+        #Converting the videos dictionary into a json string for storage
+        videosJson = json.dumps(step_data['videos'])
+      )
+      db.add(new_module) #Add the new module to our workspace
+
+    # Committing your work and saving your changes in the database
+    db.commit()
+    print("✅ Your plan has been saved to the database!")
+  except Exception as e:
+    print(f"  [Error] Could not save to database: {e}")
+    db.rollback() # Incase anything goes wrong, undo all the changes
+  finally:
+    #End of session
+    db.close()
+
+def format_plan_for_display(plan: Plan):
+  output = []
+  output.append(f"🎉 Here is your complete, detailed learning curriculum! 🎉")
+  output.append("==========================================================")
+
+  # Sort modules by step number to ensure they are in order
+  sorted_modules = sorted(plan.modules, key=lambda m: m.stepNumber)
+
+  for module in sorted_modules:
+    output.append(f"\nModule {module.stepNumber}: {module.title}")
+    output.append("----------------------------------------------------------")
+    output.append("✍️ Recommended Article/Tutorial:")
+    output.append(f"  - Title: {module.articleTitle}")
+    output.append(f"    Reason: {module.articleReason}")
+    output.append(f"    Link: {module.articleLink}")
+
+    output.append("\n🎓 Recommended YouTube Videos:")
+    videos = json.loads(module.videosJson) # Turn the JSON string back into a Python dictionary
+    for category, video_info in videos.items():
+        output.append(f"  - Best ({category}): {video_info['title']}")
+        output.append(f"    Reason: {video_info['reason']}")
+        output.append(f"    Link: {video_info['link']}")
+    output.append("==========================================================")
+  return "\n".join(output)

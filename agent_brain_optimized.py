@@ -21,7 +21,6 @@ def main():
     with open("GEMINI_API_KEY.txt", 'r') as f:
         GEMINI_API_KEY = f.read().strip()
     
-    # --- THE FIX (PART 1) ---
     # This line is for LangChain. It finds the key in the environment variables.
     os.environ['GOOGLE_API_KEY'] = GEMINI_API_KEY
     
@@ -38,38 +37,46 @@ def main():
   llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
   # --- 2. Give the Agent its Tools ---
-  # We need to bind the models to the tools that need them
-  # This is a more advanced way of passing arguments
-  from functools import partial
+  # Create wrapper functions that include the required parameters
+  def curriculum_planning_wrapper(topic: str) -> str:
+    return curriculum_planning_tool.invoke({"chat_model": llm, "topic": topic})
+  
+  def resource_search_wrapper(step_description: str) -> str:
+    return resource_search_tool.invoke({"chat_model": llm, "step_description": step_description})
+  
+  def save_plan_wrapper(tool_input: str) -> str:
+    # Parse the input - it should be JSON with topic and full_curriculum_json
+    import json
+    try:
+      parsed_input = json.loads(tool_input)
+      return save_plan_to_database_tool.invoke({
+        "genai_client": genai,
+        "topic": parsed_input["topic"],
+        "full_curriculum_json": parsed_input["full_curriculum_json"]
+      })
+    except:
+      # If parsing fails, assume it's just the topic and create empty curriculum
+      return save_plan_to_database_tool.invoke({
+        "genai_client": genai,
+        "topic": tool_input,
+        "full_curriculum_json": "{}"
+      })
 
-  # The curriculum and search tools need the 'chat_model' (our LLM)
-  # The database tool needs the 'genai' client for embeddings
   tools = [
     Tool(
       name="Curriculum Planning Tool",
-      func=lambda topic: curriculum_planning_tool(topic, chat_model=llm),
-      description="""
-      Use this tool ONLY to generate the initial step-by-step learning plan outline.
-      This tool DOES NOT find resources; it only creates the numbered list of module titles.
-      Input must be the user's desired learning topic.
-      """
+      func=curriculum_planning_wrapper,
+      description="Use this tool ONLY to generate the initial step-by-step learning plan outline. This tool DOES NOT find resources; it only creates the numbered list of module titles. Input must be the user's desired learning topic.",
     ),
     Tool(
-      name="Resource Search Tool",
-      func=lambda step_description: resource_search_tool(step_description, chat_model=llm),
-      description="""
-      Use this tool for EACH module of the learning plan to find one web article and several YouTube videos.
-      The input must be a single, specific step from the learning plan, for example: '1. Understand Stock Market Fundamentals'.
-      Returns a JSON string with the found resources for that single step.
-      """
+      name="Resource Search Tool", 
+      func=resource_search_wrapper,
+      description="Use this tool for EACH module of the learning plan to find one web article and several YouTube videos. The input must be a single, specific step from the learning plan.",
     ),
     Tool(
       name="Save Plan to Database Tool",
-      func=lambda topic, full_curriculum_json: save_plan_to_database_tool(topic, full_curriculum_json, genai_client=genai),
-      description="""
-      Use this FINAL tool to save the completed learning plan to the database.
-      The input must be the original topic and a JSON string representing the full curriculum with all its researched modules.
-      """
+      func=save_plan_wrapper,
+      description="Use this FINAL tool to save the completed learning plan to the database. Input must be JSON with 'topic' and 'full_curriculum_json' keys.",
     ),
   ]
 

@@ -1,114 +1,116 @@
+from langchain.tools import Tool
 import google.generativeai as genai
 import os
-import re
-import json # Library for handling JSON data from the web
-from agent.tools import google_search, youtube_search
-from agent.analysis import analyze_results
-from agent.memory import (
-  save_curriculum_to_db,
-  get_embedding,
-  find_similar_plan_in_db,
-  format_plan_for_display
-)
 
+#langchain imports
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain import hub
+
+#import our custom tools we created
+from agent.agent_tools import(
+  curriculum_planning_tool,
+  resource_search_tool,
+  save_plan_to_database_tool
+)
+from agent.memory import find_similar_plan_in_db, get_embedding, format_plan_for_display
 
 def main():
+  "Main function to run the AI Learning Buddy as a LangChain Agent"
   try:
     with open("GEMINI_API_KEY.txt", 'r') as f:
-      GEMINI_API_KEY = f.read().strip()
-    with open("SERPER_API_KEY.txt", "r") as f:
-      SERPER_API_KEY = f.read().strip()
+        GEMINI_API_KEY = f.read().strip()
+    
+    # --- THE FIX (PART 1) ---
+    # This line is for LangChain. It finds the key in the environment variables.
+    os.environ['GOOGLE_API_KEY'] = GEMINI_API_KEY
+    
+    # --- THE FIX (PART 2) ---
+    # This line is for our direct calls to the genai library (like in get_embedding).
+    # We need to explicitly configure it.
+    genai.configure(api_key=GEMINI_API_KEY)
+
   except FileNotFoundError:
-    print("ERROR: Make sure you have your API keys in files named 'GEMINI_API_KEY.txt' and 'SERPER_API_KEY.txt'")
-    exit()
+    print("ERROR: GEMINI_API_KEY.txt not found. Please create the file.")
+    return
+  
+  #1. Setting up brain for our agent LLM
+  llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
-  #Configure the Gemini API
-  genai.configure(api_key=GEMINI_API_KEY)
-  chat_model = genai.GenerativeModel("gemini-2.5-flash")
+  # --- 2. Give the Agent its Tools ---
+  # We need to bind the models to the tools that need them
+  # This is a more advanced way of passing arguments
+  from functools import partial
 
+  # The curriculum and search tools need the 'chat_model' (our LLM)
+  # The database tool needs the 'genai' client for embeddings
+  tools = [
+    Tool(
+      name="Curriculum Planning Tool",
+      func=lambda topic: curriculum_planning_tool(topic, chat_model=llm),
+      description="""
+      Use this tool ONLY to generate the initial step-by-step learning plan outline.
+      This tool DOES NOT find resources; it only creates the numbered list of module titles.
+      Input must be the user's desired learning topic.
+      """
+    ),
+    Tool(
+      name="Resource Search Tool",
+      func=lambda step_description: resource_search_tool(step_description, chat_model=llm),
+      description="""
+      Use this tool for EACH module of the learning plan to find one web article and several YouTube videos.
+      The input must be a single, specific step from the learning plan, for example: '1. Understand Stock Market Fundamentals'.
+      Returns a JSON string with the found resources for that single step.
+      """
+    ),
+    Tool(
+      name="Save Plan to Database Tool",
+      func=lambda topic, full_curriculum_json: save_plan_to_database_tool(topic, full_curriculum_json, genai_client=genai),
+      description="""
+      Use this FINAL tool to save the completed learning plan to the database.
+      The input must be the original topic and a JSON string representing the full curriculum with all its researched modules.
+      """
+    ),
+  ]
 
-  #Main agent logic 
-  print("Hello! I am your AI Learning Buddy.")
+  # --- 3. Create the Agent's "Mission Briefing" (the Prompt) ---
+  # We pull a standard, high-quality prompt from the LangChain Hub
+  # This prompt is specifically designed for agents that use tools (ReAct framework)
+  
+  prompt = hub.pull("hwchase17/react")
+
+  # --- 4. Assemble the Agent ---
+  agent = create_react_agent(llm, tools, prompt)
+  agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+  # Now we run the agent
+  print("Hello! I am your AI Learning Buddy (LangChain edition)")
   user_topic = input("What amazing thing do you want to learn today? ")
 
+  # We will check our database first instead of manually starting generating answers
+  print("\n Checking my database memory")
   user_topic_embedding = get_embedding(genai, user_topic)
   found_plan = find_similar_plan_in_db(user_topic_embedding)
 
   if found_plan:
-    print(f"\n I found a very similar plan for '{found_plan.topic}' in my database!")
+    print(f"\n🧠 I found a very similar plan for '{found_plan.topic}' in my database!")
     load_plan = input("Do you want to load this saved plan? (yes/no): ")
     if load_plan.lower() == 'yes':
-      print(f"\nLoading your plan from database:'{found_plan.topic}'...\n")
+      print("\nLoading your plan from the database...\n")
       print(format_plan_for_display(found_plan))
       return
-
-  """##This is where I will start implementing the Memory logic
-  safe_topic_filename = re.sub(r'[^a-zA-Z0-9_]', '_', user_topic)
-  memory_file = f"learning_plan_{safe_topic_filename}.txt"
-
-  if os.path.exists(memory_file):
-    print("\nI found a learning plan for this topic in my memory")
-    load_plan = input("Do you want to load the saved plan? Only reply with yes or no:")
-    if load_plan == "yes":
-      print(f"Loading you plan from {memory_file}...\n")
-      with open(memory_file, 'r', encoding='utf-8') as f:
-        print(f.read())
-      return"""
-  
-  #If no memory is shown then we can just proceed with the usual code:
-  print(f"\nOK! Generating a new learning path for '{user_topic}'...")
-
-  # == STEP 1: The AI generates a learning plan ==
-  print(f"\n🗺️ Generating a learning path for '{user_topic}'...")
-  planner_prompt = f"""
-  You are an expert curriculum designer. Your task is to create a step-by-step learning path for a complete beginner who wants to learn about '{user_topic}'.
-  Please provide 1 main learning modules. 
-  Each module should be a single, clear step on the learning journey.
-  Present this as a numbered list. Do not add any extra explanations, just the list.
-  """
-  plan_response = chat_model.generate_content(planner_prompt)
-  learning_plan_text = plan_response.text
-  learning_steps = [step.strip() for step in learning_plan_text.split('\n') if step.strip()]
-
-
-  print("\nHere is your personalized learning plan:")
-  print("---------------------------------------")
-  print(learning_plan_text)
-  print("---------------------------------------")
-
-  full_curriculum = []
-  for steps in learning_steps:
-    print(f"\nResearching resources for step:\"{steps}\"")
-
-    search_query_prompt = f"Generate a simple, effective search query for a beginner to find a tutorial on: \"{steps}\". Just the query, no extra text."
-    search_query_response = chat_model.generate_content(search_query_prompt)
-    search_query = search_query_response.text.strip()
-
-    #First find the best articles
-    web_results = google_search(search_query)
-    curated_article = analyze_results(web_results, search_query, search_type='web')
-
-    #Second find the best videos
-    video_categories = {
-      "General": youtube_search(search_query, sort_by='relevance'),
-      "Most Viewed": youtube_search(search_query, sort_by="viewCount"),
-      "Most Recent": youtube_search(search_query, sort_by="uploadDate")
-    }
-
-    curated_videos = {}
-    for category, results in video_categories.items():
-      print(f"  > Analyzing '{category}' videos...")
-      curated_videos[category] = analyze_results(results, f"{category} video for {search_query}", search_type='video')
     
-    full_curriculum.append({
-      "step": steps,
-      "article": curated_article,
-      "videos": curated_videos
-    })
+  # If no plan is found, we launch the agent to create a new one
+  print(f"\n🤖 Launching LangChain agent to create a new plan for '{user_topic}'...")
 
-  #Save to memory
-  save_curriculum_to_db(genai, user_topic, full_curriculum)
-  print("\nYour new plan has been generated and saved to the database for future use!")
+  result = agent_executor.invoke({
+    "input":  f"Create a full, detailed learning plan with resources for the topic: '{user_topic}'."
+              "First, create the plan outline. Then, for each step in the outline, find resources."
+              "Finally, save the complete plan to the database and confirm when you are done."
+  })
+
+  print("\nAgent has finished its work.")
+  print(f"Final output: {result['output']}")
 
 if __name__ == "__main__":
   main()

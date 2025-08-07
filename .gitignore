@@ -1,5 +1,27 @@
-node_modules
-# Keep environment variables out of version control
+# .gitignore
+
+# ----------------- #
+#  SECRET KEYS      #
+# ----------------- #
+# Ignore the files containing our secret API keys and database URL.
+# This is the most important part.
+GEMINI_API_KEY.txt
+SERPER_API_KEY.txt
 .env
 
-/generated/prisma
+# ----------------- #
+#  PYTHON & VENV    #
+# ----------------- #
+# Ignore Python's automatically generated cache folders.
+__pycache__/
+# If you create a Python virtual environment folder, ignore it.
+venv/
+*.pyc
+
+# ----------------- #
+#  MEMORY FILES     #
+# ----------------- #
+# Ignore any plan or vector files that are generated during testing.
+# The asterisk (*) is a "wildcard" that means "anything".
+# So, this ignores any file that starts with "learning_plan_".
+learning_plan_*

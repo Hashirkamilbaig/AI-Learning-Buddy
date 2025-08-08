@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey
+from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey, Boolean 
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import datetime
@@ -22,6 +22,9 @@ class Module(Base):
   id = Column(String, primary_key=True, index=True)
   stepNumber = Column(Integer)
   title = Column(String)
+
+  #The progress tracker
+  is_complete = Column(Boolean, default=False, nullable=False)
 
   articleTitle = Column(String)
   articleReason = Column(String)

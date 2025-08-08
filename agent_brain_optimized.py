@@ -10,9 +10,45 @@ from langchain import hub
 from agent.agent_tools import (
 	curriculum_planning_tool,
 	research_and_save_module_tool,
-	set_models
+	set_models,
 )
-from agent.memory import find_similar_plan_in_db, get_embedding, format_plan_for_display
+from agent.memory import find_similar_plan_in_db, get_embedding, format_plan_for_display, mark_module_as_complete
+
+def interactive_session(plan):
+	"""Handles the user interaction after the plan is loaded."""
+	print("Plan loaded, Entering interactive session.")
+	print("Commands: 'next', 'quit', 'view plan'")
+	while True:
+		# Find the first module that is NOT complete
+		current_module = None
+		sorted_modules = sorted(plan.modules, key=lambda m: m.stepNumber)
+		for module in sorted_modules:
+			if not module.is_complete:
+				current_module = module
+				break
+
+		if current_module is None:
+			print("\n🎉 Congratulations! You have completed all modules for this plan! 🎉")
+			break
+
+		print("-"* 50)
+		print(f"Current Step ({current_module.stepNumber}/{len(plan.modules)}): {current_module.title}")
+		user_command = input("> ").lower().strip()
+
+		if user_command == 'quit':
+			print("Saving your progress. See you next time!")
+			break
+		elif user_command == 'next':
+			mark_module_as_complete(current_module.id)
+			# We "refresh" the plan object by marking the module complete in our local copy too
+			current_module.is_complete = True
+		elif user_command == 'view plan':
+			print("\nLoading your plan...\n")
+			print(format_plan_for_display(plan))
+		else:
+			print("Unknown command. Available commands: 'next', 'quit', 'view plan'")
+
+
 
 def main():
 	"""Main function to run the AI Learning Buddy as a LangChain Agent."""
@@ -47,8 +83,9 @@ def main():
 		print(f"\n🧠 I found a very similar plan for '{found_plan.topic}' in my database!")
 		load_plan = input("Do you want to load this saved plan? (yes/no): ")
 		if load_plan.lower() == 'yes':
-				print("\nLoading your plan from the database...\n")
-				print(format_plan_for_display(found_plan))
+				#print("\nLoading your plan from the database...\n")
+				#print(format_plan_for_display(found_plan))
+				interactive_session(found_plan)
 				return
 	
 	print(f"\n🤖 Launching LangChain agent to create a new plan for '{user_topic}'...")
@@ -65,6 +102,17 @@ def main():
 	
 	print("\n✅ Agent has finished its work.")
 	print(f"Final output: {result['output']}")
+
+	print("\nWould you like to start this new plan now?")
+	start_now = input("(Yes/No): ").lower().strip()
+	if start_now == "yes":
+		print("\n🧠 Loading the new plan...")
+		newly_created_plan = find_similar_plan_in_db(user_topic_embedding)
+		
+		if newly_created_plan:
+			interactive_session(newly_created_plan)
+		else:
+			print("Sorry, I couldn't load the new plan for a session")
 
 if __name__ == "__main__":
 	main()

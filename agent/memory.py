@@ -48,6 +48,25 @@ def find_similar_plan_in_db(user_embedding):
 
   return None
 
+def mark_module_as_complete(module_id: str):
+  """Updates the module's status to complete in the database."""
+  db = SessionLocal()
+  try:
+    # First we have to find the module through its unique ID
+    module_to_update = db.query(Module).filter(Module.id == module_id).first()
+    if module_to_update:
+      module_to_update.is_complete = True
+      db.commit()
+      print(f"Progress saved for module: {module_to_update.title}")
+    else:
+      print(f"  > Error: Could not find module with ID {module_id} to mark as complete.")
+  except Exception as e:
+    print(f"  > Error updating database: {e}")
+    db.rollback()
+  finally:
+    db.close()
+
+
 def save_curriculum_to_db(genai_client, topic, curriculum_data):
   print(f"\n💾 Saving your curriculum for '{topic}' to the database...")
   db = SessionLocal()

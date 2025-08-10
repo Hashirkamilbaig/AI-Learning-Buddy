@@ -35,3 +35,20 @@ class Module(Base):
   # This is the foreign key that links this module back to a specific plan
   plan_id = Column(String, ForeignKey('plans.id'))
   plan = relationship("Plan", back_populates="modules")
+
+  # Adding another relationship the links modules with feedback
+  feedback = relationship("Feedback", back_populates="module")
+
+# A new class for our new table called feedback
+class Feedback(Base):
+  __tablename__ = 'feedback'
+
+  id = Column(String, primary_key=True, index=True)
+  rating = Column(Integer) # 1 to 5
+  resource_type = Column(String) # 'article' or 'video'
+  resource_link = Column(String)
+  createdAt = Column(DateTime, default=datetime.datetime.utcnow)
+
+  #Linking feedback with its respective module
+  module_id = Column(String, ForeignKey('modules.id'))
+  module = relationship("Module", back_populates="feedback")

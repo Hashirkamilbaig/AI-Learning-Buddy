@@ -1,5 +1,6 @@
 # agent_brain_optimized.py (Simple Version)
 
+import json
 import google.generativeai as genai
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -12,12 +13,19 @@ from agent.agent_tools import (
 	research_and_save_module_tool,
 	set_models,
 )
-from agent.memory import find_similar_plan_in_db, get_embedding, format_plan_for_display, mark_module_as_complete
+from agent.memory import (
+	find_similar_plan_in_db,
+	get_embedding,
+	format_plan_for_display,
+	mark_module_as_complete,
+	save_feedback_to_db
+	)
 
 def interactive_session(plan):
 	"""Handles the user interaction after the plan is loaded."""
 	print("Plan loaded, Entering interactive session.")
 	print("Commands: 'next', 'quit', 'view plan'")
+	
 	while True:
 		# Find the first module that is NOT complete
 		current_module = None
@@ -39,9 +47,37 @@ def interactive_session(plan):
 			print("Saving your progress. See you next time!")
 			break
 		elif user_command == 'next':
+			print("\nGreat! Before we move on, how helpful were the resources for this module?")
+
+			# Ask for feedback on article
+			while True:
+				try:
+					article_rating = int(input(f"  - Rate the article (1 to 5): '{current_module.articleTitle[:50]}...'\n  > "))
+					if 1<= article_rating <=5:
+						save_feedback_to_db(current_module.id, current_module.articleLink, 'article', article_rating)
+						break
+					else:
+						print("Please enter a number between 1 to 5.")
+				except ValueError:
+					print("   Invalid input. Please enter a number.")
+			
+			# Ask for feedback on the videos
+			videos = json.loads(current_module.videosJson)
+			for category, video_info in videos.items():
+				while True:
+					try:
+						video_rating = int(input(f"  - Rate the '{category}' video(1-5): '{video_info['title'][:50]}...'\n > "))
+						if 1 <= video_rating <= 5:
+							save_feedback_to_db(current_module.id, video_info['link'], 'video', video_rating)
+							break
+						else:
+							print("  Please enter a number between 1 and 5.")
+					except ValueError:
+						print("  Invalid input. Please enter a number.")
 			mark_module_as_complete(current_module.id)
 			# We "refresh" the plan object by marking the module complete in our local copy too
 			current_module.is_complete = True
+
 		elif user_command == 'view plan':
 			print("\nLoading your plan...\n")
 			print(format_plan_for_display(plan))

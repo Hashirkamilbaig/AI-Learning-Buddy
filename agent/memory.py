@@ -2,7 +2,7 @@ import json
 import uuid
 import numpy as np
 from .database import SessionLocal
-from .models import Plan, Module
+from .models import Plan, Module, Feedback
 from sqlalchemy.orm import joinedload
 
 def get_embedding(genai_client, text):
@@ -62,6 +62,27 @@ def mark_module_as_complete(module_id: str):
       print(f"  > Error: Could not find module with ID {module_id} to mark as complete.")
   except Exception as e:
     print(f"  > Error updating database: {e}")
+    db.rollback()
+  finally:
+    db.close()
+
+def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, rating: int):
+  """Saves a user's feedback rating for a specific resource to the database."""
+  db = SessionLocal()
+  try:
+    new_feedback = Feedback(
+      id = str(uuid.uuid4()),
+      module_id = module_id,
+      resource_link = resource_link,
+      resource_type = resource_type,
+      rating= rating
+    )
+    db.add(new_feedback)
+    db.commit()
+    print(f" > Thank you! your feedback for the {resource_type} has been recorded.")
+
+  except Exception as e:
+    print(f"Error saving feedback {e}")
     db.rollback()
   finally:
     db.close()

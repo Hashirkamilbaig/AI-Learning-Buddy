@@ -4,6 +4,8 @@ import numpy as np
 from .database import SessionLocal
 from .models import Plan, Module, Feedback
 from sqlalchemy.orm import joinedload
+import tldextract
+from sqlalchemy import func
 
 def get_embedding(genai_client, text):
   #Here we are generating a vector embedding for the text
@@ -66,7 +68,7 @@ def mark_module_as_complete(module_id: str):
   finally:
     db.close()
 
-def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, rating: int):
+def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, source: str, rating: int):
   """Saves a user's feedback rating for a specific resource to the database."""
   db = SessionLocal()
   try:
@@ -75,6 +77,7 @@ def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, 
       module_id = module_id,
       resource_link = resource_link,
       resource_type = resource_type,
+      source = source,
       rating= rating
     )
     db.add(new_feedback)
@@ -86,6 +89,57 @@ def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, 
     db.rollback()
   finally:
     db.close()
+
+
+def get_feedback_summary(topic: str) -> str:
+  """Retrieves all feedback for a given topic and creates a summary of liked/disliked resources.
+      Using a 'three strikes' rule for disliked sources."""
+  db = SessionLocal()
+  try:
+    # Step 1: Find the plan to get its associated modules
+    plan = db.query(Plan).filter(func.lower(Plan.topic) == topic.lower()).first()
+    if not plan: return "No past feedback found for this topic."
+
+    modules = db.query(Module).filter(Module).filter(Module.plan_id == plan.id).all()
+    module_ids = [m.id for m in modules]
+    if not module_ids: return "No past feedback found for this topic."
+
+    # Step 2: Get all feedback for those modules
+    all_feedback = db.query(Feedback).filter(Feedback.module_id.in_(module_ids)).all()
+    if not all_feedback: return "No past feedback found for this topic."
+
+    # Step 3: Tally the likes and dislikes for each unique source
+    source_ratings = {}
+    for fb in all_feedback:
+      if fb.source not in source_ratings:
+        source_ratings[fb.source] = {'likes': 0, 'dislikes': 0}
+      if fb.rating >= 4: # 4 or 5 stars is a "like"
+        source_ratings[fb.source]['likes'] += 1
+      elif fb.rating <= 2: # 1 or 2 stars is a "dislike"
+        source_ratings[fb.source]['dislikes'] += 1
+    
+    # Step 4: Apply our rules to create the final lists
+    liked_sources = [source for source, ratings in source_ratings.items() if ratings['likes']>0]
+
+    #Three strike rule
+    disliked_sources = [source for source, ratings in source_ratings.items() if ratings['dislikes']>=3]
+
+    # Step 5: Build the summary string for the AI
+    summary_parts = []
+    if liked_sources:
+      summary_parts.append(f"The user has previously LIKED resources from these sources: {liked_sources}.")
+    if disliked_sources:
+      summary_parts.append(f"The user has previously DISLIKED resources from these sources and they should be AVOIDED: {disliked_sources}.")
+
+    if not summary_parts:
+      return "No strong preferences found in past feedback."
+    
+    return " ".json(summary_parts)
+  
+  finally:
+    db.close()
+
+
 
 
 def save_curriculum_to_db(genai_client, topic, curriculum_data):

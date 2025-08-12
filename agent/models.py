@@ -47,6 +47,8 @@ class Feedback(Base):
   rating = Column(Integer) # 1 to 5
   resource_type = Column(String) # 'article' or 'video'
   resource_link = Column(String)
+
+  source = Column(String, index=True)
   createdAt = Column(DateTime, default=datetime.datetime.utcnow)
 
   #Linking feedback with its respective module

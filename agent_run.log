@@ -1,0 +1,48 @@
+2025-08-13 02:25:30,657 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-13 02:25:54,235 - INFO - User requested topic: 'stock trading'
+2025-08-13 02:25:54,235 - INFO - Checking database for similar plans...
+2025-08-13 02:26:01,006 - INFO - Found similar plan for 'Stock Trading'. Prompting user.
+2025-08-13 02:26:10,209 - INFO - Plan loaded, Entering interactive session.
+2025-08-13 02:26:10,209 - INFO - All modules for this plan are complete.
+2025-08-13 02:26:48,420 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-13 02:26:51,460 - INFO - User requested topic: 'python'
+2025-08-13 02:26:51,462 - INFO - Checking database for similar plans...
+2025-08-13 02:26:57,678 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-08-13 02:27:00,505 - INFO - Plan loaded, Entering interactive session.
+2025-08-13 02:27:04,675 - INFO - User quit the interactive session.
+2025-08-13 02:27:11,366 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-13 02:27:22,389 - INFO - User requested topic: 'C coding'
+2025-08-13 02:27:22,389 - INFO - Checking database for similar plans...
+2025-08-13 02:27:29,172 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-08-13 02:27:37,689 - INFO - No existing plan found or user declined load. Launching LangChain agent for 'C coding'.
+2025-08-13 02:27:39,539 - INFO - Using Curriculum Planning Tool for topic: C coding
+2025-08-13 02:28:28,305 - ERROR - Failed to save module to database. Reason: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT plans.id AS plans_id, plans.topic AS plans_topic, plans.embedding AS plans_embedding, plans."createdAt" AS "plans_createdAt" 
+FROM plans 
+WHERE plans.topic = %(topic_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'topic_1': 'C coding', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-13 02:28:29,521 - INFO - LangChain agent has finished its work.
+2025-08-13 02:35:54,556 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-13 02:36:00,079 - INFO - User requested topic: 'C coding'
+2025-08-13 02:36:00,083 - INFO - Checking database for similar plans...
+2025-08-13 02:36:06,395 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-08-13 02:36:08,331 - INFO - No existing plan found or user declined load. Launching LangChain agent for 'C coding'.
+2025-08-13 02:36:09,748 - INFO - Using Curriculum Planning Tool for topic: C coding
+2025-08-13 02:36:13,772 - INFO - Researching and Saving Module for step: '1. C Language Fundamentals'
+2025-08-13 02:36:59,031 - INFO - Connecting to database to save module: '1. C Language Fundamentals'
+2025-08-13 02:37:03,537 - INFO - Researching and Saving Module for step: '2. Control Flow and Functions'
+2025-08-13 02:37:43,888 - INFO - Connecting to database to save module: '2. Control Flow and Functions'
+2025-08-13 02:37:46,653 - INFO - Researching and Saving Module for step: '3. Pointers'
+2025-08-13 02:38:17,475 - INFO - Connecting to database to save module: '3. Pointers'
+2025-08-13 02:38:20,751 - INFO - LangChain agent has finished its work.
+2025-08-13 02:38:28,371 - INFO - User chose to start the newly created plan.
+2025-08-13 02:38:33,775 - INFO - Plan loaded, Entering interactive session.
+2025-08-13 02:39:49,025 - INFO - User quit the interactive session.

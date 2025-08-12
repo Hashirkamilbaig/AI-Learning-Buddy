@@ -1,5 +1,3 @@
-# agent_brain_optimized.py (Simple Version)
-
 import json
 import google.generativeai as genai
 import os
@@ -7,6 +5,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain import hub
 import tldextract
+from agent import config
+from agent.logger import logger
+os.environ['GOOGLE_API_KEY'] = config.GEMINI_API_KEY
 
 # Import our decorated tools and the model setter
 from agent.agent_tools import (
@@ -24,7 +25,7 @@ from agent.memory import (
 
 def interactive_session(plan):
 	"""Handles the user interaction after the plan is loaded."""
-	print("Plan loaded, Entering interactive session.")
+	logger.info("Plan loaded, Entering interactive session.")
 	print("Commands: 'next', 'quit', 'view plan'")
 	
 	while True:
@@ -37,6 +38,7 @@ def interactive_session(plan):
 				break
 
 		if current_module is None:
+			logger.info("All modules for this plan are complete.")
 			print("\n🎉 Congratulations! You have completed all modules for this plan! 🎉")
 			break
 
@@ -45,6 +47,7 @@ def interactive_session(plan):
 		user_command = input("> ").lower().strip()
 
 		if user_command == 'quit':
+			logger.info("User quit the interactive session.")
 			print("Saving your progress. See you next time!")
 			break
 		elif user_command == 'next':
@@ -97,17 +100,11 @@ def interactive_session(plan):
 
 def main():
 	"""Main function to run the AI Learning Buddy as a LangChain Agent."""
-	try:
-		GEMINI_API_KEY = open("GEMINI_API_KEY.txt", 'r').read().strip()
-		os.environ['GOOGLE_API_KEY'] = GEMINI_API_KEY
-		genai.configure(api_key=GEMINI_API_KEY)
-	except FileNotFoundError:
-		print("ERROR: GEMINI_API_KEY.txt not found. Please create the file.")
-		return
+	genai.configure(api_key=config.GEMINI_API_KEY)
 
-	llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.5, convert_system_message_to_human=True)
+	llm = ChatGoogleGenerativeAI(model=config.CHAT_MODEL_NAME, temperature=0.5, convert_system_message_to_human=True)
 	
-	# Set the models for the tools to use
+	# Set the models for the tools to
 	set_models(llm, genai)
 
 	# The tools are now automatically available as decorated functions
@@ -117,14 +114,16 @@ def main():
 	agent = create_react_agent(llm, tools, prompt)
 	agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
-	print("Hello! I am your AI Learning Buddy (LangChain edition)")
+	logger.info("Hello! I am your AI Learning Buddy (LangChain edition)")
 	user_topic = input("What amazing thing do you want to learn today? ")
+	logger.info(f"User requested topic: '{user_topic}'")
 
-	print("\n🧠 Checking my database memory...")
+	logger.info("Checking database for similar plans...")
 	user_topic_embedding = get_embedding(genai, user_topic)
 	found_plan = find_similar_plan_in_db(user_topic_embedding)
 
 	if found_plan:
+		logger.info(f"Found similar plan for '{found_plan.topic}'. Prompting user.")
 		print(f"\n🧠 I found a very similar plan for '{found_plan.topic}' in my database!")
 		load_plan = input("Do you want to load this saved plan? (yes/no): ")
 		if load_plan.lower() == 'yes':
@@ -133,6 +132,7 @@ def main():
 				interactive_session(found_plan)
 				return
 	
+	logger.info(f"No existing plan found or user declined load. Launching LangChain agent for '{user_topic}'.")
 	print(f"\n🤖 Launching LangChain agent to create a new plan for '{user_topic}'...")
 	
 	result = agent_executor.invoke({
@@ -145,19 +145,21 @@ def main():
 							"Your final answer should be a single sentence confirming the plan has been successfully created and saved."
 	})
 	
+	logger.info("LangChain agent has finished its work.")
 	print("\n✅ Agent has finished its work.")
 	print(f"Final output: {result['output']}")
 
 	print("\nWould you like to start this new plan now?")
 	start_now = input("(Yes/No): ").lower().strip()
 	if start_now == "yes":
+		logger.info("User chose to start the newly created plan.")
 		print("\n🧠 Loading the new plan...")
 		newly_created_plan = find_similar_plan_in_db(user_topic_embedding)
 		
 		if newly_created_plan:
 			interactive_session(newly_created_plan)
 		else:
-			print("Sorry, I couldn't load the new plan for a session")
+			logger.error("Failed to load the newly created plan for an interactive session.")
 
 if __name__ == "__main__":
 	main()

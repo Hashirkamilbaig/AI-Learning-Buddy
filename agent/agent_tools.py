@@ -9,6 +9,7 @@ from .analysis import analyze_results
 from .memory import get_embedding
 from .database import SessionLocal
 from .models import Plan, Module
+from .logger import logger
 
 # Global variables to store the models (will be set from main)
 _chat_model = None
@@ -30,7 +31,7 @@ def curriculum_planning_tool(topic: str) -> str:
 	Returns:
 			JSON string containing a list of module titles
 	"""
-	print(f"🤖 Using Curriculum Planning Tool for topic: {topic}")
+	logger.info(f"Using Curriculum Planning Tool for topic: {topic}")
 
 	planner_prompt = f"""
 	You are an expert curriculum designer. Your task is to generate a list of main module titles for a learning plan on the topic: '{topic}'.
@@ -68,7 +69,7 @@ def research_and_save_module_tool(tool_input: str) -> str:
 	except (KeyError, ValueError):
 		return "Error: Input must be in format 'topic=TOPIC_NAME, step_description=MODULE_TITLE'"
 
-	print(f"🤖 Researching and Saving Module for step: '{step_description}'")
+	logger.info(f"Researching and Saving Module for step: '{step_description}'")
 	
 	search_query_prompt = f"""
 	You are an expert at generating search queries. Your task is to take the following learning topic and create a single, simple, and effective search query for a beginner.
@@ -101,9 +102,10 @@ def research_and_save_module_tool(tool_input: str) -> str:
 	for category, results in video_categories.items():
 		curated_videos[category] = analyze_results(_chat_model, results, f"{category} video for {search_query}", "video")
 	
-	# Database operations
-	db = SessionLocal()
 	try:
+		logger.info(f"Connecting to database to save module: '{step_description}'")
+		db = SessionLocal()
+
 		plan = db.query(Plan).filter(Plan.topic == topic).first()
 		if not plan:
 				print(f"  > Creating new plan for '{topic}' in the database...")
@@ -132,6 +134,7 @@ def research_and_save_module_tool(tool_input: str) -> str:
 		return f"Successfully researched and saved module: '{step_description}'"
 		
 	except Exception as e:
+		logger.error(f"Failed to save module to database. Reason: {e}")
 		db.rollback()
 		return f"Error: Failed to save module. Reason: {e}"
 	finally:

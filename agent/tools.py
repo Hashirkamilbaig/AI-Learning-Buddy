@@ -1,13 +1,7 @@
 import os
 import requests
 import json
-
-try:
-  with open("SERPER_API_KEY.txt", 'r') as f:
-    SERPER_API_KEY = f.read().strip()
-except:
-  #error
-  raise EnvironmentError("SERPER_API_KEY.txt not found. Please create the file with your API key.")
+from . import config
 
 
 # Now to our new tool
@@ -15,7 +9,7 @@ def google_search(query: str):
   url = "https://google.serper.dev/search"
   payload = json.dumps({'q' : query})
   headers = {
-    'X-API-KEY' : SERPER_API_KEY,
+    'X-API-KEY' : config.SERPER_API_KEY,
     'Content-Type': 'application/json'
   }
 
@@ -36,7 +30,7 @@ def youtube_search(query: str, sort_by: str = 'relevance'):
   url = "https://google.serper.dev/videos"
   payload = json.dumps({"q": query, "gl": "us", "hl": "en", "sort_by": sort_by})
   headers = {
-      'X-API-KEY': SERPER_API_KEY,
+      'X-API-KEY': config.SERPER_API_KEY,
       'Content-Type': 'application/json'
   }
   print(f">YouTube Search ({sort_by}): {query}...")

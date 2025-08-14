@@ -100,7 +100,7 @@ def get_feedback_summary(topic: str) -> str:
     plan = db.query(Plan).filter(func.lower(Plan.topic) == topic.lower()).first()
     if not plan: return "No past feedback found for this topic."
 
-    modules = db.query(Module).filter(Module).filter(Module.plan_id == plan.id).all()
+    modules = db.query(Module).filter(Module.plan_id == plan.id).all()
     module_ids = [m.id for m in modules]
     if not module_ids: return "No past feedback found for this topic."
 
@@ -134,7 +134,7 @@ def get_feedback_summary(topic: str) -> str:
     if not summary_parts:
       return "No strong preferences found in past feedback."
     
-    return " ".json(summary_parts)
+    return " ".join(summary_parts)
   
   finally:
     db.close()

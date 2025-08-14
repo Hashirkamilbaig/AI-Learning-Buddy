@@ -90,17 +90,17 @@ def research_and_save_module_tool(tool_input: str) -> str:
 	# Search operations (no API calls)
 	web_results = google_search(search_query)
 	video_categories = {
-		"General": youtube_search(search_query, 'relevance'),
-		"Most Viewed": youtube_search(search_query, "viewCount"),
-		"Most Recent": youtube_search(search_query, "uploadDate")
+		"General": youtube_search(query=search_query, order='relevance'),
+		"Most Viewed": youtube_search(query=search_query, order="viewCount"),
+		"Highest Rated": youtube_search(query=search_query, order="rating") 
 	}
 	
 	# Analyze results
-	curated_article = analyze_results(_chat_model, web_results, search_query, 'web')
+	curated_article = analyze_results(_chat_model, topic, web_results, search_query, 'web')
 	
 	curated_videos = {}
 	for category, results in video_categories.items():
-		curated_videos[category] = analyze_results(_chat_model, results, f"{category} video for {search_query}", "video")
+		curated_videos[category] = analyze_results(_chat_model, topic, results, f"{category} video for {search_query}", "video")
 	
 	try:
 		logger.info(f"Connecting to database to save module: '{step_description}'")

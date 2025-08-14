@@ -1,12 +1,14 @@
 # agent/analysis.py (The Final, Caching-Enabled, Professional Version)
 
 import json
-import hashlib # We need this to create a unique "fingerprint" for our cache
+import hashlib
+
+from agent.memory import get_feedback_summary 
 
 # This is our simple, in-memory cache. It will be reset every time the program runs.
 analysis_cache = {}
 
-def analyze_results(model, results, query, search_type='web'):
+def analyze_results(model, topic: str, results, query, search_type='web'):
   """
   Asks the AI model to pick the single best result from a list.
   Now includes a cache to avoid re-analyzing the same data and hitting rate limits.
@@ -26,14 +28,25 @@ def analyze_results(model, results, query, search_type='web'):
       return analysis_cache[cache_key]
 
   print(f"      CACHE MISS! Performing new analysis for {search_type}...")
+
+  feedback_summary = get_feedback_summary(topic)
   
+  # --- MODIFIED PROMPT: Now we include the rich statistics! ---
   analysis_prompt = f"""
   You are a helpful learning assistant. From the following list of {search_type} search results for the query "{query}", pick the ONE best result for a complete beginner.
 
-  Search Results (JSON format): {json.dumps(results[:5])}
+  Search Results (JSON format):
+  {json.dumps(results[:5])}
+
+  IMPORTANT CONTEXT:
+  - User Feedback Summary: {feedback_summary}
+  - For videos, a high 'likeCount' relative to 'viewCount' is a strong signal of quality.
+  - A descriptive 'channelTitle' can also indicate a reliable source.
+  
+  Use all available information, including the user's past feedback and the video statistics, to make your decision. Strongly prefer sources the user has liked and avoid sources the user has disliked.
 
   Your goal is to return a JSON object with the keys "title", "link", and "reason".
-  The "reason" should be a one-sentence explanation for your choice.
+  Your reason should be a one-sentence explanation for your choice, and if you used the feedback or statistics, briefly mention it.
   Provide ONLY the JSON object and nothing else.
   """
 
@@ -42,8 +55,6 @@ def analyze_results(model, results, query, search_type='web'):
     clean_json_string = response.content.strip().replace('```json', '').replace('```', '')
     analysis_result = json.loads(clean_json_string)
     
-    # --- 3. Save to Cache ---
-    # Store the new result in our cache before returning it.
     analysis_cache[cache_key] = analysis_result
     
     return analysis_result

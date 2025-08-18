@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey, Boolean 
+from sqlalchemy import Column, String, Integer, DateTime, Float, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import datetime
@@ -38,6 +38,9 @@ class Module(Base):
 
   # Adding another relationship the links modules with feedback
   feedback = relationship("Feedback", back_populates="module")
+  
+  #A new relationship for notes
+  notes = relationship("Note", back_populates="module")
 
 # A new class for our new table called feedback
 class Feedback(Base):
@@ -54,3 +57,17 @@ class Feedback(Base):
   #Linking feedback with its respective module
   module_id = Column(String, ForeignKey('modules.id'))
   module = relationship("Module", back_populates="feedback")
+
+class Note(Base):
+  __tablename__ = 'notes'
+
+  id = Column(String, primary_key=True, index=True)
+  video_link = Column(String, index=True)
+  
+  #The text type is to store very long strings, like our notes.
+  content = Column(Text)
+  createdAt = Column(DateTime, default=datetime.datetime.utcnow)
+
+  # This links the note back to a specific module in a plan
+  module_id = Column(String, ForeignKey('modules.id'))
+  module = relationship("Module", back_populates="notes")

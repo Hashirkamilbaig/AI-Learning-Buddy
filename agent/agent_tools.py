@@ -4,7 +4,7 @@ import json
 import uuid
 import google.generativeai as genai
 from langchain.tools import tool
-from .tools import google_search, youtube_search
+from .tools import google_search, youtube_search, get_youtube_transcript
 from .analysis import analyze_results
 from .memory import get_embedding
 from .database import SessionLocal
@@ -139,3 +139,44 @@ def research_and_save_module_tool(tool_input: str) -> str:
 		return f"Error: Failed to save module. Reason: {e}"
 	finally:
 		db.close()
+
+@tool
+def youtube_note_taker_tool(video_url: str) -> str:
+	"""
+	Use this tool to generate timestamped notes for a specific YouTube video.
+	The input MUST be a valid YouTube video URL.
+	This tool fetches the video transcript and uses an AI to summarize it into key concepts with timestamps.
+	"""
+	logger.info(f"Using YouTube Note Taker Tool for URL: {video_url}")
+
+	#Step 1: Get transcript using our specialist function
+	transcript = get_youtube_transcript(video_url)
+	if transcript.startswith("Error:"):
+		return transcript
+	
+	#Step 2: Engineer the powerful summarizer prompt
+	note_taker_prompt = f"""
+	You are an expert academic note-taker. Your task is to analyze the following video transcript and distill it into a set of key concepts.
+
+	The transcript is provided with timestamps in the format [MM:SS].
+
+	Your instructions are:
+	1.  Identify the main, high-level concepts discussed in the video.
+	2.  For each concept, provide a concise, 2-3 sentence summary.
+	3.  Crucially, for each summary, you MUST provide the starting timestamp (e.g., [02:35]) where that concept is first introduced in the transcript.
+	4.  Format your output as a clean, structured list. Do not add any conversational fluff or introductory sentences.
+
+	Here is the transcript:
+	---
+	{transcript[:12000]} 
+	---
+	""" 
+	# We truncate the transcript to avoid exceeding model token limits
+
+	# Step 3: Use the AI to generate the notes
+	notes_response = _chat_model.invoke(note_taker_prompt)
+
+	# We can add database saving logic here later if we want!
+	# For now, it just returns the notes.
+
+	return notes_response.content

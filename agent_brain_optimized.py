@@ -8,12 +8,14 @@ import tldextract
 from agent import config
 from agent.logger import logger
 os.environ['GOOGLE_API_KEY'] = config.GEMINI_API_KEY
+import re
 
 # Import our decorated tools and the model setter
 from agent.agent_tools import (
 	curriculum_planning_tool,
 	research_and_save_module_tool,
 	set_models,
+	youtube_note_taker_tool
 )
 from agent.memory import (
 	find_similar_plan_in_db,
@@ -115,7 +117,23 @@ def main():
 	agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 	logger.info("Hello! I am your AI Learning Buddy (LangChain edition)")
-	user_topic = input("What amazing thing do you want to learn today? ")
+	user_input = input("How can I help you learn today? (Enter a topic, or a YouTube link for notes): ")
+
+	# Check if the input is a YouTube URL
+	youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})"
+	is_youtube_link = re.match(youtube_regex, user_input)
+
+	if is_youtube_link:
+			# --- Run the Note-Taker Workflow ---
+			logger.info(f"YouTube link detected. Running Note-Taker tool for: {user_input}")
+			# Use the new invoke method instead of direct call
+			notes = youtube_note_taker_tool.invoke({"video_url": user_input})
+			print("\n--- Generated Notes ---")
+			print(notes)
+			print("-----------------------")
+			return # The job is done
+
+	user_topic = user_input
 	logger.info(f"User requested topic: '{user_topic}'")
 
 	logger.info("Checking database for similar plans...")

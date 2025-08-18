@@ -138,3 +138,103 @@ WHERE plans.topic = %(topic_1)s
 2025-08-14 03:15:16,992 - INFO - User chose to start the newly created plan.
 2025-08-14 03:15:19,027 - INFO - Plan loaded, Entering interactive session.
 2025-08-14 03:19:33,079 - INFO - User quit the interactive session.
+2025-08-15 11:31:27,489 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-15 11:32:54,131 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:32:54,198 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:32:54,198 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:32:54,198 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-15 11:35:47,535 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-15 11:35:49,040 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:35:49,046 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:35:49,047 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:35:49,047 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-15 11:38:44,656 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-15 11:38:47,721 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:38:47,727 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:38:47,727 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:38:47,727 - INFO - Extracted video ID: 13433v7AKEc
+2025-08-15 11:38:47,727 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-15 11:41:50,875 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-15 11:41:52,041 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:41:52,046 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:41:52,047 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=13433v7AKEc
+2025-08-15 11:41:52,047 - INFO - Extracted video ID: 13433v7AKEc
+2025-08-15 11:41:52,049 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-18 03:14:43,175 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:14:49,863 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:14:49,933 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:14:49,933 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:14:49,933 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:14:49,933 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-18 03:21:41,300 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:21:48,677 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:21:48,684 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:21:48,684 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:21:48,684 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:21:48,689 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-18 03:35:02,583 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:35:13,081 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:35:13,085 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:35:13,087 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:35:13,087 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:35:13,087 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-18 03:39:15,344 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:39:28,714 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:39:28,716 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:39:28,716 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:39:28,716 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:39:28,716 - ERROR - An unexpected error occurred while fetching transcript: name 'YouTubeTranscriptApi' is not defined
+2025-08-18 03:39:52,522 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:40:04,294 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:40:04,309 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:40:04,311 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:40:04,311 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:40:04,313 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'
+2025-08-18 03:43:42,003 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:43:49,604 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:43:49,616 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:43:49,616 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:43:49,616 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:43:49,616 - ERROR - An unexpected error occurred while fetching transcript: type object 'YouTubeTranscriptApi' has no attribute 'list_transcripts'
+2025-08-18 03:44:12,055 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:44:13,906 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:44:13,910 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:44:13,910 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:44:13,910 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:44:13,910 - ERROR - An unexpected error occurred while fetching transcript: YouTubeTranscriptApi.list() missing 1 required positional argument: 'video_id'
+2025-08-18 03:47:36,613 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:47:45,563 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:47:45,578 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:47:45,578 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:47:45,580 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:47:45,581 - ERROR - An unexpected error occurred while fetching transcript: YouTubeTranscriptApi.list() missing 1 required positional argument: 'video_id'
+2025-08-18 03:48:51,545 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:48:52,435 - INFO - User requested topic: 'transcript_list = YouTubeTranscriptApi.list(video_id)'
+2025-08-18 03:48:52,437 - INFO - Checking database for similar plans...
+2025-08-18 03:49:04,475 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:49:07,069 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:49:07,075 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:49:07,075 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:49:07,075 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:49:07,075 - ERROR - An unexpected error occurred while fetching transcript: YouTubeTranscriptApi.list() missing 1 required positional argument: 'video_id'
+2025-08-18 03:51:21,584 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:51:28,224 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:51:28,238 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:51:28,242 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:51:28,242 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:51:29,675 - ERROR - An unexpected error occurred while fetching transcript: 'FetchedTranscriptSnippet' object is not subscriptable
+2025-08-18 03:53:21,235 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:53:23,454 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:53:23,457 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:53:23,457 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:53:23,457 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 03:59:39,104 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 03:59:47,125 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:59:47,138 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:59:47,141 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ&t=56s
+2025-08-18 03:59:47,141 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-08-18 04:02:45,613 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 04:03:30,663 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=kqtD5dpn9C8
+2025-08-18 04:03:30,795 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=kqtD5dpn9C8
+2025-08-18 04:03:30,795 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=kqtD5dpn9C8
+2025-08-18 04:03:30,795 - INFO - Extracted video ID: kqtD5dpn9C8

@@ -2,7 +2,7 @@ import json
 import uuid
 import numpy as np
 from .database import SessionLocal
-from .models import Plan, Module, Feedback
+from .models import Note, Plan, Module, Feedback
 from sqlalchemy.orm import joinedload
 import tldextract
 from sqlalchemy import func
@@ -89,6 +89,38 @@ def save_feedback_to_db(module_id: str, resource_link: str, resource_type: str, 
     db.rollback()
   finally:
     db.close()
+
+def save_notes_to_db(module_id: str, video_link: str, notes_content: str):
+  """Saves the generated notes for a video to the database"""
+  db = SessionLocal()
+  try:
+      # Check if notes for this specific video link already exist for this module
+      existing_note = db.query(Note).filter(
+          Note.module_id == module_id,
+          Note.video_link == video_link
+      ).first()
+
+      if existing_note:
+          # If notes exist, update them instead of creating a new entry
+          existing_note.content = notes_content
+          print(f"  > Updated notes for video: {video_link}")
+      else:
+          # If no notes exist, create a new entry
+          new_note = Note(
+              id=str(uuid.uuid4()),
+              module_id=module_id,
+              video_link=video_link,
+              content=notes_content
+          )
+          db.add(new_note)
+          print(f"  > Saved new notes for video: {video_link}")
+          
+      db.commit()
+  except Exception as e:
+      print(f"  > Error saving notes: {e}")
+      db.rollback()
+  finally:
+      db.close()
 
 
 def get_feedback_summary(topic: str) -> str:

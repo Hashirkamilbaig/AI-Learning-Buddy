@@ -3,10 +3,11 @@
 import json
 import uuid
 import google.generativeai as genai
+from typing import Optional
 from langchain.tools import tool
 from .tools import google_search, youtube_search, get_youtube_transcript
 from .analysis import analyze_results
-from .memory import get_embedding
+from .memory import get_embedding, save_notes_to_db
 from .database import SessionLocal
 from .models import Plan, Module
 from .logger import logger
@@ -141,11 +142,12 @@ def research_and_save_module_tool(tool_input: str) -> str:
 		db.close()
 
 @tool
-def youtube_note_taker_tool(video_url: str) -> str:
+def youtube_note_taker_tool(video_url: str, module_id: Optional[str] = None) -> str:
 	"""
-	Use this tool to generate timestamped notes for a specific YouTube video.
-	The input MUST be a valid YouTube video URL.
-	This tool fetches the video transcript and uses an AI to summarize it into key concepts with timestamps.
+	Generates timestamped notes for a YouTube video. 
+	If a 'module_id' is provided, the notes are also saved to the database.
+	Input for video_url MUST be a valid YouTube URL.
+	Input for module_id is an optional unique ID of a learning module.
 	"""
 	logger.info(f"Using YouTube Note Taker Tool for URL: {video_url}")
 
@@ -173,10 +175,14 @@ def youtube_note_taker_tool(video_url: str) -> str:
 	""" 
 	# We truncate the transcript to avoid exceeding model token limits
 
-	# Step 3: Use the AI to generate the notes
 	notes_response = _chat_model.invoke(note_taker_prompt)
+	notes_content = notes_response.content
 
-	# We can add database saving logic here later if we want!
-	# For now, it just returns the notes.
-
-	return notes_response.content
+	# --- NEW STEP: Save the generated notes to the database ---
+	if module_id and notes_content:
+		logger.info(f"Saving notes for module {module_id} to the database.")
+		save_notes_to_db(module_id, video_url, notes_content)
+	elif not module_id:
+		logger.info("No module_id provided. Skipping database save for this one-off request.")
+	
+	return notes_content

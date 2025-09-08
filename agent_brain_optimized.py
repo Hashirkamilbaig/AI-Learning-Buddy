@@ -28,7 +28,7 @@ from agent.memory import (
 def interactive_session(plan):
 	"""Handles the user interaction after the plan is loaded."""
 	logger.info("Plan loaded, Entering interactive session.")
-	print("Commands: 'next', 'quit', 'view plan'")
+	print("Commands: 'next', 'quit', 'view plan', 'notes <video_number>' (e.g., 'notes 1')")
 	
 	while True:
 		# Find the first module that is NOT complete
@@ -46,6 +46,14 @@ def interactive_session(plan):
 
 		print("-"* 50)
 		print(f"Current Step ({current_module.stepNumber}/{len(plan.modules)}): {current_module.title}")
+
+		videos = json.loads(current_module.videosJson)
+		video_list = [] # Create a simple list to access videos by number
+		print("  Available Videos for Notes:")
+		for i, (category, video_info) in enumerate(videos.items()):
+				print(f"    {i+1}: [{category}] {video_info['title'][:60]}...")
+				video_list.append(video_info)
+
 		user_command = input("> ").lower().strip()
 
 		if user_command == 'quit':
@@ -95,6 +103,34 @@ def interactive_session(plan):
 		elif user_command == 'view plan':
 			print("\nLoading your plan...\n")
 			print(format_plan_for_display(plan))
+
+		elif user_command.startswith("notes"):
+			try:
+					parts = user_command.split()
+					if len(parts) < 2:
+							print("  Invalid format. Please use 'notes <video_number>', e.g., 'notes 1'.")
+							continue
+					
+					video_number = int(parts[1])
+					if 1 <= video_number <= len(video_list):
+							selected_video = video_list[video_number - 1]
+							video_url = selected_video['link']
+							
+							print(f"\n🤖 Generating notes for: '{selected_video['title']}'...")
+							
+							# Call our tool with BOTH arguments for persistent saving
+							notes = youtube_note_taker_tool.invoke({
+									"video_url": video_url,
+									"module_id": current_module.id 
+							})
+
+							print("\n--- Generated Notes ---")
+							print(notes)
+							print("-----------------------")
+					else:
+							print(f"  Invalid video number. Please choose a number between 1 and {len(video_list)}.")
+			except (ValueError, IndexError):
+					print("  Invalid command. Please use 'notes <video_number>', e.g., 'notes 1'.")
 		else:
 			print("Unknown command. Available commands: 'next', 'quit', 'view plan'")
 

@@ -238,3 +238,73 @@ WHERE plans.topic = %(topic_1)s
 2025-08-18 04:03:30,795 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=kqtD5dpn9C8
 2025-08-18 04:03:30,795 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=kqtD5dpn9C8
 2025-08-18 04:03:30,795 - INFO - Extracted video ID: kqtD5dpn9C8
+2025-08-18 18:50:49,941 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 18:51:06,957 - INFO - User requested topic: 'Python'
+2025-08-18 18:51:06,957 - INFO - Checking database for similar plans...
+2025-08-18 18:51:12,153 - INFO - No existing plan found or user declined load. Launching LangChain agent for 'Python'.
+2025-08-18 18:51:13,585 - INFO - Using Curriculum Planning Tool for topic: Python
+2025-08-18 18:51:18,258 - INFO - Researching and Saving Module for step: '1. Python Fundamentals'
+2025-08-18 18:51:21,835 - INFO - YouTube Search (Official API, order by relevance): python fundamentals for beginners...
+2025-08-18 18:51:23,180 - INFO - YouTube Search (Official API, order by viewCount): python fundamentals for beginners...
+2025-08-18 18:51:24,314 - INFO - YouTube Search (Official API, order by rating): python fundamentals for beginners...
+2025-08-18 18:52:10,625 - INFO - Connecting to database to save module: '1. Python Fundamentals'
+2025-08-18 18:52:14,528 - INFO - Researching and Saving Module for step: '2. Data Structures and Control Flow'
+2025-08-18 18:52:17,388 - INFO - YouTube Search (Official API, order by relevance): data structures control flow for beginners...
+2025-08-18 18:52:18,641 - INFO - YouTube Search (Official API, order by viewCount): data structures control flow for beginners...
+2025-08-18 18:52:19,998 - INFO - YouTube Search (Official API, order by rating): data structures control flow for beginners...
+2025-08-18 18:53:10,004 - INFO - Connecting to database to save module: '2. Data Structures and Control Flow'
+2025-08-18 18:53:17,082 - INFO - Researching and Saving Module for step: '3. Functions'
+2025-08-18 18:53:21,826 - INFO - YouTube Search (Official API, order by relevance): functions for beginners...
+2025-08-18 18:53:23,063 - INFO - YouTube Search (Official API, order by viewCount): functions for beginners...
+2025-08-18 18:53:24,188 - INFO - YouTube Search (Official API, order by rating): functions for beginners...
+2025-08-18 18:54:05,724 - INFO - Connecting to database to save module: '3. Functions'
+2025-08-18 18:54:09,616 - INFO - LangChain agent has finished its work.
+2025-08-18 18:57:54,490 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 18:57:55,465 - INFO - User requested topic: 'python'
+2025-08-18 18:57:55,468 - INFO - Checking database for similar plans...
+2025-08-18 18:58:01,654 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-08-18 18:58:04,900 - INFO - Plan loaded, Entering interactive session.
+2025-08-18 18:58:48,838 - INFO - User quit the interactive session.
+2025-08-18 18:58:55,333 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-08-18 18:58:56,447 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=K5KVEU3aaeQ
+2025-08-18 18:58:56,447 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ
+2025-08-18 18:58:56,447 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ
+2025-08-18 18:58:56,447 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-09-08 01:45:56,636 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-09-08 01:46:36,142 - INFO - YouTube link detected. Running Note-Taker tool for: https://www.youtube.com/watch?v=LcxREB8BL8c
+2025-09-08 01:46:36,199 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=LcxREB8BL8c
+2025-09-08 01:46:36,199 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=LcxREB8BL8c
+2025-09-08 01:46:36,200 - INFO - Extracted video ID: LcxREB8BL8c
+2025-09-08 01:46:50,073 - INFO - No module_id provided. Skipping database save for this one-off request.
+2025-09-08 01:47:40,778 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-09-08 01:47:44,180 - INFO - User requested topic: 'python'
+2025-09-08 01:47:44,180 - INFO - Checking database for similar plans...
+2025-09-08 01:47:47,519 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-09-08 01:47:52,434 - INFO - Plan loaded, Entering interactive session.
+2025-09-08 01:48:01,596 - INFO - Using YouTube Note Taker Tool for URL: https://www.youtube.com/watch?v=K5KVEU3aaeQ
+2025-09-08 01:48:01,597 - INFO - Fetching Transcript for video: https://www.youtube.com/watch?v=K5KVEU3aaeQ
+2025-09-08 01:48:01,597 - INFO - Extracted video ID: K5KVEU3aaeQ
+2025-09-08 01:48:12,831 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-09-08 01:48:17,592 - INFO - User requested topic: 'c++'
+2025-09-08 01:48:17,594 - INFO - Checking database for similar plans...
+2025-09-08 01:48:19,641 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-09-08 01:48:24,509 - INFO - No existing plan found or user declined load. Launching LangChain agent for 'c++'.
+2025-09-08 01:48:25,683 - INFO - Using Curriculum Planning Tool for topic: topic=c++
+2025-09-08 01:48:30,008 - INFO - Researching and Saving Module for step: '1. C++ Fundamentals'
+2025-09-08 01:48:31,960 - INFO - YouTube Search (Official API, order by relevance): C++ fundamentals for beginners...
+2025-09-08 01:48:32,811 - INFO - YouTube Search (Official API, order by viewCount): C++ fundamentals for beginners...
+2025-09-08 01:48:33,532 - INFO - YouTube Search (Official API, order by rating): C++ fundamentals for beginners...
+2025-09-08 01:49:03,376 - INFO - Connecting to database to save module: '1. C++ Fundamentals'
+2025-09-08 01:49:07,541 - INFO - Researching and Saving Module for step: '2. Object-Oriented Programming in C++'
+2025-09-08 01:49:10,460 - INFO - YouTube Search (Official API, order by relevance): OOP C++ for beginners...
+2025-09-08 01:49:11,104 - INFO - YouTube Search (Official API, order by viewCount): OOP C++ for beginners...
+2025-09-08 01:49:11,820 - INFO - YouTube Search (Official API, order by rating): OOP C++ for beginners...
+2025-09-08 01:49:58,622 - INFO - Connecting to database to save module: '2. Object-Oriented Programming in C++'
+2025-09-08 01:49:59,868 - INFO - Researching and Saving Module for step: '3. Advanced C++ and Standard Library'
+2025-09-08 01:50:05,642 - INFO - YouTube Search (Official API, order by relevance): C++ Standard Library for beginners...
+2025-09-08 01:50:06,188 - INFO - YouTube Search (Official API, order by viewCount): C++ Standard Library for beginners...
+2025-09-08 01:50:06,684 - INFO - YouTube Search (Official API, order by rating): C++ Standard Library for beginners...
+2025-09-08 01:50:52,813 - INFO - Connecting to database to save module: '3. Advanced C++ and Standard Library'
+2025-09-08 01:50:54,831 - INFO - LangChain agent has finished its work.
+2025-09-08 01:52:23,874 - INFO - User chose to start the newly created plan.
+2025-09-08 01:52:24,443 - INFO - Plan loaded, Entering interactive session.

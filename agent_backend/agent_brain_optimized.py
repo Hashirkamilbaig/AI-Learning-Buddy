@@ -1,4 +1,5 @@
 import json
+import sys
 import google.generativeai as genai
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -153,7 +154,21 @@ def main():
 	agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 	logger.info("Hello! I am your AI Learning Buddy (LangChain edition)")
-	user_input = input("How can I help you learn today? (Enter a topic, or a YouTube link for notes): ")
+	# user_input = input("How can I help you learn today? (Enter a topic, or a YouTube link for notes): ")
+
+	if len(sys.argv) < 2:
+		print("Error: Please provide a topic as a command-line argument.", file=sys.stderr)
+		sys.exit(1)
+	
+	user_input = sys.argv[1]
+
+	# Your processing logic here
+	# Example:
+	result = {"output": f"Processed topic: {user_input}"}
+
+	# ✅ Only final output is printed to stdout
+	print(result["output"])
+
 
 	# Check if the input is a YouTube URL
 	youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})"

@@ -308,3 +308,14 @@ WHERE plans.topic = %(topic_1)s
 2025-09-08 01:50:54,831 - INFO - LangChain agent has finished its work.
 2025-09-08 01:52:23,874 - INFO - User chose to start the newly created plan.
 2025-09-08 01:52:24,443 - INFO - Plan loaded, Entering interactive session.
+2025-10-12 01:45:38,963 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-10-12 01:45:38,965 - INFO - User requested topic: 'python'
+2025-10-12 01:45:38,965 - INFO - Checking database for similar plans...
+2025-10-12 01:45:43,026 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-10-12 01:45:46,154 - INFO - No existing plan found or user declined load. Launching LangChain agent for 'python'.
+2025-10-12 01:45:47,876 - INFO - Using Curriculum Planning Tool for topic: topic=python
+2025-10-12 01:45:56,472 - INFO - Hello! I am your AI Learning Buddy (LangChain edition)
+2025-10-12 01:45:56,473 - INFO - User requested topic: 'python'
+2025-10-12 01:45:56,473 - INFO - Checking database for similar plans...
+2025-10-12 01:45:58,592 - INFO - Found similar plan for 'Python'. Prompting user.
+2025-10-12 01:46:00,196 - INFO - Plan loaded, Entering interactive session.

@@ -1,3 +1,5 @@
+# File: agent_backend/agent/tools.py
+
 import os
 import requests
 import json
@@ -18,9 +20,7 @@ def google_search(query: str):
   }
 
   print(f" > Web searching for: {query}...")
-  #response = requests.request("Post",url, headers=headers, data=payload)
 
-  # Now we try to get top 5 search results and pick the best one
   try:
     response = requests.request("POST", url, headers=headers, data=payload)
     response.raise_for_status()
@@ -46,8 +46,6 @@ def youtube_search(query: str, order: str = 'relevance', max_results=5):
         part='id',
         maxResults=max_results,
         type='video',
-        # --- THE FIX ---
-        # We now use the 'order' parameter here.
         order=order
       ).execute()
 
@@ -57,7 +55,7 @@ def youtube_search(query: str, order: str = 'relevance', max_results=5):
       video_response = youtube.videos().list(
         part='snippet,statistics',
         id=','.join(video_ids)
-      ).execute() # <-- This was missing parentheses in your provided code, a critical bug.
+      ).execute()
 
       rich_results = []
       for item in video_response.get('items', []):
@@ -68,7 +66,11 @@ def youtube_search(query: str, order: str = 'relevance', max_results=5):
             'link': f"https://www.youtube.com/watch?v={item.get('id')}",
             'channelTitle': snippet.get('channelTitle'),
             'viewCount': int(stats.get('viewCount', 0)),
-            'likeCount': int(stats.get('likeCount', 0))
+            'likeCount': int(stats.get('likeCount', 0)),
+            # ==================================================================
+            # THE ONLY CHANGE IS ADDING THIS LINE
+            # ==================================================================
+            'thumbnail': snippet.get('thumbnails', {}).get('medium', {}).get('url')
         })
       return rich_results
   except Exception as e:
@@ -85,7 +87,6 @@ def get_youtube_transcript(video_url: str) -> str:
   """
   logger.info(f"Fetching Transcript for video: {video_url}")
   try:
-      # Extract video ID from various YouTube URL formats
       if "youtu.be/" in video_url:
           video_id = video_url.split("youtu.be/")[-1].split("?")[0].split("&")[0]
       elif "watch?v=" in video_url:
@@ -100,7 +101,6 @@ def get_youtube_transcript(video_url: str) -> str:
       
       logger.info(f"Extracted video ID: {video_id}")
       
-      # Fixed: Use the correct updated API - create instance and use fetch()
       ytt_api = YouTubeTranscriptApi()
       transcript_data = ytt_api.fetch(video_id, languages=['en', 'en-US', 'en-GB'])
 
